@@ -1,20 +1,8 @@
-import React, {ReactElement} from 'react';
-import ReactDOMServer from 'react-dom/server';
+import React from 'react';
 import Fastify from 'fastify';
-import fs from 'fs';
-import path from 'path';
 
 import {App} from './components';
-
-const generateHtmlPage = (title: string, element: ReactElement): string => {
-  let html = fs.readFileSync(path.join(__dirname, 'index.html'), 'utf-8');
-  html = html.replace('<title></title>', `<title>${title}</title>`);
-  html = html.replace(
-    '<body></body>',
-    ReactDOMServer.renderToStaticMarkup(<body>{element}</body>)
-  );
-  return html;
-};
+import {generateHtmlPage} from './utils';
 
 const fastify = Fastify();
 
