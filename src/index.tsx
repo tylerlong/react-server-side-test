@@ -1,18 +1,27 @@
-import React from 'react';
-import ReactDomServer from 'react-dom/server';
+import React, {ReactElement} from 'react';
+import ReactDOMServer from 'react-dom/server';
 import Fastify from 'fastify';
+import fs from 'fs';
+import path from 'path';
 
-const element = <h1>Hello</h1>;
+import {App} from './components';
 
-const html = ReactDomServer.renderToString(element);
-console.log(html);
-const html2 = ReactDomServer.renderToStaticMarkup(element);
-console.log(html2);
+const generateHtmlPage = (title: string, element: ReactElement): string => {
+  let html = fs.readFileSync(path.join(__dirname, 'index.html'), 'utf-8');
+  html = html.replace('<title></title>', `<title>${title}</title>`);
+  html = html.replace(
+    '<body></body>',
+    ReactDOMServer.renderToStaticMarkup(<body>{element}</body>)
+  );
+  return html;
+};
 
 const fastify = Fastify();
 
 fastify.get('/', (request, reply) => {
-  reply.type('text/html').send(html);
+  reply
+    .type('text/html')
+    .send(generateHtmlPage('React Server Side Test', <App />));
 });
 
 fastify.listen(8080, '127.0.0.1', (error, address) => {
